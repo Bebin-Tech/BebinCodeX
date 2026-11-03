@@ -2,7 +2,7 @@
 
 ## Release assessment
 
-Functional initial implementation; **not production ready** and **not the complete advanced-edition specification**. No hosted deployment, subscriptions, sandbox or enterprise compliance claims are made. The application uses real database-backed behavior and real provider HTTP adapters; provider fixtures exist only in tests.
+Functional initial implementation; **not production ready** and **not the complete advanced-edition specification**. The initial implementation is hosted on Vercel with Neon PostgreSQL. No subscriptions, sandbox or enterprise compliance claims are made. The application uses real database-backed behavior and real provider HTTP adapters; provider fixtures exist only in tests.
 
 ## Implemented
 
@@ -24,7 +24,7 @@ Functional initial implementation; **not production ready** and **not the comple
 
 | Check | Observed result |
 | --- | --- |
-| Backend Pytest | 22 passed; 1 Starlette test-client deprecation warning |
+| Backend Pytest | 26 passed; 1 Starlette test-client deprecation warning |
 | TypeScript | Passed through standalone tsc and production build |
 | Next.js production build | Passed; `/`, `/app`, `/docs` generated |
 | Alembic upgrade → downgrade → upgrade | Passed against a dedicated disposable SQLite database |
@@ -56,7 +56,7 @@ A migration downgrade was mistakenly run against the local development database 
 | Admin | Separate platform-admin authorization, management interfaces and real platform metrics; no ordinary org admin can access nonexistent platform routes |
 | Observability | OpenTelemetry exporters, metrics, centralized structured logging, Sentry, public status data, operational alerts |
 | Infrastructure | AWS IaC, S3 artifacts, Nginx/TLS production ingress, secrets manager, immutable scanned image digests, distributed limits/quotas, HA and exercised DR |
-| Verification | Live providers without credentials, PostgreSQL/Redis/Compose (Docker engine unavailable), payment/sandbox/SSO tests, provider-contract fixtures for every adapter, automated browser regression suite, component/a11y/load/security-escape testing, image deployment |
+| Verification | Live providers without credentials, Redis/Compose (Docker engine unavailable), payment/sandbox/SSO tests, provider-contract fixtures for every adapter, automated browser regression suite, component/a11y/load/security-escape testing, container image deployment |
 
 ## Important limitations
 
@@ -69,3 +69,7 @@ Agent work currently runs in the API request. Runs can be interrupted by server 
 3. Repository intelligence, real-time collaboration and Git issue-to-PR workflow.
 4. Identity/governance, metered billing, platform administration and production infrastructure.
 5. Full browser/accessibility/load/eval suite and independent security review before commercial release.
+
+## Hosted deployment
+
+Vercel Services builds the Next.js frontend and FastAPI backend together. Neon Free PostgreSQL is provisioned in Singapore, with the initial Alembic schema applied. Hosted frontend, health, database readiness, encryption configuration and unauthenticated account rejection are verified. The existing local database remains separate. See [VERCEL_DEPLOYMENT.md](docs/VERCEL_DEPLOYMENT.md) for configuration and release procedures.
