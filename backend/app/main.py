@@ -28,7 +28,7 @@ rate_windows = defaultdict(deque)
 async def boundary(request: Request, call_next):
     correlation = str(uuid.uuid4())
     if request.method not in ('GET', 'HEAD', 'OPTIONS'):
-        if request.headers.get('origin') != settings.app_origin:
+        if request.headers.get('origin') not in settings.allowed_origins:
             return JSONResponse({'detail': 'Origin rejected'}, status_code=403)
         length = request.headers.get('content-length')
         if length and (not length.isdigit() or int(length) > 6_000_000):

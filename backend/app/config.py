@@ -1,5 +1,6 @@
 from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator, model_validator
 
 
 class Settings(BaseSettings):
@@ -15,6 +16,32 @@ class Settings(BaseSettings):
     groq_url: str = 'https://api.groq.com/openai/v1'
     deepseek_url: str = 'https://api.deepseek.com'
     compatible_url: str = ''
+    vercel: bool = False
+    vercel_url: str = ''
+    vercel_project_production_url: str = ''
+
+    @field_validator('database_url')
+    @classmethod
+    def psycopg_url(cls, value):
+        for prefix in ('postgres://', 'postgresql://'):
+            if value.startswith(prefix):
+                return 'postgresql+psycopg://' + value[len(prefix):]
+        return value
+
+    @model_validator(mode='after')
+    def validate_cloud(self):
+        if self.vercel and (not self.database_url.startswith('postgresql+psycopg://') or not self.encryption_key):
+            raise ValueError('Vercel deployment requires PostgreSQL DATABASE_URL and ENCRYPTION_KEY')
+        return self
+
+    @property
+    def allowed_origins(self):
+        origins = {self.app_origin}
+        if self.vercel:
+            for host in (self.vercel_url, self.vercel_project_production_url):
+                if host and '/' not in host and host.endswith('.vercel.app'):
+                    origins.add('https://' + host)
+        return origins
 
 
 settings = Settings()
