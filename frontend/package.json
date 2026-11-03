@@ -1,0 +1,32 @@
+{
+  "name": "devpilot-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0",
+    "typecheck": "tsc --noEmit",
+    "postinstall": "node scripts/copy-monaco.mjs"
+  },
+  "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
+    "@tanstack/react-query": "^5.66.0",
+    "lucide-react": "^0.468.0",
+    "monaco-editor": "^0.57.0",
+    "next": "16.4.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.7.0"
+  },
+  "overrides": {
+    "dompurify": "3.4.17"
+  }
+}
