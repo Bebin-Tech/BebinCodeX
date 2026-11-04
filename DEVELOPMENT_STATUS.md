@@ -73,3 +73,7 @@ Agent work currently runs in the API request. Runs can be interrupted by server 
 ## Hosted deployment
 
 Vercel Services builds the Next.js frontend and FastAPI backend together. Neon Free PostgreSQL is provisioned in Singapore, with the initial Alembic schema applied. Hosted frontend, health, database readiness, encryption configuration and unauthenticated account rejection are verified. The existing local database remains separate. See [VERCEL_DEPLOYMENT.md](docs/VERCEL_DEPLOYMENT.md) for configuration and release procedures.
+
+## UI refresh — 4 November 2026
+
+Applied a charcoal/blue palette with matching light mode and Monaco theme. Simplified dashboard, navigation, auth, connection, team, usage, settings and assistant copy; removed repeated slogans, promotional panels and redundant approval badges. Kept actionable setup, provider billing and change-review guidance. Production build and TypeScript passed. Desktop dashboard/editor and mobile layout inspected in the browser; light-mode text inheritance and hidden shortcut control corrected.
