@@ -20,10 +20,10 @@ Back up the encryption key under your own access controls before storing importa
 4. Use `vercel curl` to check the staged deployment while preserving Deployment Protection.
 5. Promote the tested deployment with `vercel promote <deployment-url>`.
 
-Migrations are not automatically executed on every request or build. Future releases requiring schema changes must include the explicit migration step. Verify preview branch database isolation through the Neon integration before testing data mutations in preview environments.
+The backend build now runs scripts/migrate_release.py to apply forward migrations under a PostgreSQL advisory lock. Review future migrations for backwards compatibility before pushing; no migration runs on normal API requests. Verify preview branch database isolation through the Neon integration before testing data mutations in preview environments.
 
 ## Current boundaries
 
-The release is still the initial functional implementation described in DEVELOPMENT_STATUS.md. Hosting does not activate sandbox execution, collaboration, billing, enterprise SSO, or Git tools inside the product. Local Ollama cannot be reached from Vercel; a secure reachable endpoint would need separate administrator configuration. Live AI responses require customers' provider keys and remain unverified without them.
+The release is still the initial functional implementation described in DEVELOPMENT_STATUS.md. SANDBOX_ENABLED enables isolated scripts and static live previews using the deployed project identity. Hosting does not activate collaboration, billing, enterprise SSO, framework dev servers, or Git tools inside the product. Local Ollama cannot be reached from Vercel; a secure reachable endpoint would need separate administrator configuration. Live AI responses require customers' provider keys and remain unverified without them.
 
 Vercel Authentication protects deployment URLs according to the team's project defaults. Sign into the owning Vercel account if prompted. Centralized error monitoring, an external log drain, distributed rate limiting and full production security certification are not configured.

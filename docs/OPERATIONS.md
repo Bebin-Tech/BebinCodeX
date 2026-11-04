@@ -22,4 +22,8 @@ Runs currently execute within the API request. A process crash may leave a runni
 
 ## Not provisioned
 
-AWS Terraform, TLS ingress, S3 storage, log aggregation, Prometheus/Grafana, Sentry, OpenTelemetry exporters, Firecracker workers, signed preview domain, package proxy and automatic deployment are not implemented. Compose is a development topology, not a claim of a hardened AWS environment.
+AWS Terraform, TLS ingress, S3 storage, log aggregation, Prometheus/Grafana, Sentry, OpenTelemetry exporters, self-managed Firecracker workers, package proxy and automatic deployment are not implemented. Compose is a development topology, not a claim of a hardened AWS environment.
+
+## Managed execution
+
+Vercel Sandbox now provides short-lived Firecracker execution and isolated static previews. The backend build applies additive Alembic migrations through scripts/migrate_release.py under a PostgreSQL advisory lock. Existing agent recovery limitations still apply. Execution limits and supported runtimes are documented in EXECUTION.md.

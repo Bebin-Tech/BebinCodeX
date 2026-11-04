@@ -24,7 +24,7 @@ The initial agent has read-only repository tools and proposes a validated change
 
 ## ADR 004: sandbox boundary
 
-Application servers never execute user code. Production execution must use a separate control plane managing Firecracker microVMs (preferred) or gVisor runsc workloads. There is no unsafe local subprocess/Docker fallback. Current API returns an explicit unavailable response. No host Docker socket is mounted into API/worker containers. Warm pools, network proxy, signed preview origin and abuse monitoring are future work, not claims of current isolation.
+Application servers never execute user code. Execution uses Vercel Sandbox Firecracker microVMs through the official Python SDK. There is no unsafe local subprocess/Docker fallback. The API authorizes project access before creating short-lived, network-blocked VMs. Static previews use a separate origin with expiring bearer URLs and an opaque-origin iframe. No host Docker socket is mounted into API/worker containers. Warm pools, controlled dependency installation, framework builds and abuse monitoring remain future work. See EXECUTION.md for the implemented limits.
 
 ## ADR 005: provider secrets and limits
 

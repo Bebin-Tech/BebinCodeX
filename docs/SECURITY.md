@@ -25,8 +25,12 @@ Assets: provider keys, code, account credentials, session cookies, organization 
 - Pin container base image digests after verifying the target registry; scan OS packages and dependencies. No claim that mutable tags are production-pinned.
 - Configure HTTPS and COOKIE_SECURE=true. Deploy behind a trusted ingress with request size/rate limits. IP limits behind the Next proxy currently group requests by proxy address.
 - Harden Monaco CSP with a verified production nonce/worker strategy; current editor needs eval and inline styles. WCAG conformance and full accessibility audit are not yet established.
-- Billing, webhooks, external MCP, arbitrary URL fetches, sandbox runner, Git OAuth and deployment actions are absent, so no placeholder credentials activate them.
+- Billing, webhooks, external MCP, arbitrary URL fetches, Git OAuth and deployment actions are absent, so no placeholder credentials activate them.
 
 ## Vulnerability disclosure
 
 Do not publish code or keys in an issue. Operators must configure a private security contact before external launch. Preserve correlation IDs and a minimal reproduction; rotate exposed keys immediately.
+
+## Isolated execution addition
+
+Python/JavaScript/native TypeScript execution and static web previews use Vercel Sandbox microVMs. Read EXECUTION.md for tenant checks, time/output/session quotas, blocked VM egress, expiring preview links and iframe restrictions. These controls do not constitute a general sandbox-escape certification, package-scanning service or safe arbitrary deployment pipeline.

@@ -35,4 +35,4 @@ npm run typecheck
 npm run build
 ```
 
-Provider credentials are encrypted at rest. Remote requests target administrator-configured endpoint roots only. Configure Ollama through OLLAMA_URL; it is never selected from a browser-provided URL. Arbitrary command execution is disabled: a separate, authenticated sandbox service must be implemented and security-tested before enabling terminals or generated-code execution.
+Provider credentials are encrypted at rest. Remote requests target administrator-configured endpoint roots only. Configure Ollama through OLLAMA_URL; it is never selected from a browser-provided URL. Use **Run file** for saved Python, JavaScript and native TypeScript files, or **Live preview** for static HTML/CSS/JavaScript projects. Execution uses Vercel Sandbox microVMs with blocked egress; no code runs on the API host. See [execution documentation](docs/EXECUTION.md) for limits, supported runtimes and setup. Interactive terminals and framework/package builds are not supported.

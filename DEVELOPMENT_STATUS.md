@@ -2,7 +2,7 @@
 
 ## Release assessment
 
-Functional initial implementation; **not production ready** and **not the complete advanced-edition specification**. The initial implementation is hosted on Vercel with Neon PostgreSQL. No subscriptions, sandbox or enterprise compliance claims are made. The application uses real database-backed behavior and real provider HTTP adapters; provider fixtures exist only in tests.
+Functional initial implementation; **not production ready** and **not the complete advanced-edition specification**. The initial implementation is hosted on Vercel with Neon PostgreSQL. No subscriptions or enterprise compliance claims are made. The application uses real database-backed behavior and real provider HTTP adapters; provider fixtures exist only in tests.
 
 ## Implemented
 
@@ -24,7 +24,7 @@ Functional initial implementation; **not production ready** and **not the comple
 
 | Check | Observed result |
 | --- | --- |
-| Backend Pytest | 26 passed; 1 Starlette test-client deprecation warning |
+| Backend Pytest | 36 passed after sandbox lifecycle/authorization tests were added |
 | TypeScript | Passed through standalone tsc and production build |
 | Next.js production build | Passed; `/`, `/app`, `/docs` generated |
 | Alembic upgrade → downgrade → upgrade | Passed against a dedicated disposable SQLite database |
@@ -49,14 +49,14 @@ A migration downgrade was mistakenly run against the local development database 
 | Code intelligence | tree-sitter, pgvector embeddings/hybrid retrieval, reranking, knowledge graph, architecture maps, editable long-term memory, incremental index workers |
 | Agent runtime | Celery durable jobs/leases/recovery, cancellation/pause/resume, multi-agent/worktree orchestration, independent self-review, per-hunk review, configurable autonomy, checkpoint per step, issue-to-PR, CI reproduction, schedules |
 | IDE | Shadcn/Tailwind design-system adoption, xterm terminal, LSP IntelliSense beyond Monaco defaults, autosave/offline recovery, Yjs collaboration/presence/comments, inline completions/edits, structured slash commands/mentions, screenshot input, database explorer, migrations/docs generators, i18n |
-| Sandbox | Firecracker/gVisor control plane, resource/egress enforcement, runtime images, warm pools, snapshots, signed isolated preview URLs, package proxy and abuse monitoring. Endpoint currently returns 503; there is no unsafe execution fallback. |
+| Sandbox | Isolated script execution and static HTML previews are implemented with Vercel Sandbox. Warm pools, framework builds, package installation/scanning, disk quotas and comprehensive abuse/escape testing remain pending. |
 | Git/deployment | GitHub/GitLab OAuth/App and webhooks, repository imports, branch/stage/commit/PR/CI tools, deployment targets/rollback, public API tokens and CLI |
 | Enterprise | MFA, password reset/email verification, SAML/OIDC/SCIM, custom roles, session/devices/IP restrictions, PostgreSQL RLS, governance/export/deletion/retention/legal hold/SIEM |
 | Billing | Stripe/Razorpay, plan/subscription lifecycle, signatures/idempotent webhooks, immutable credit ledger, seats/credits/tax/GST/invoices/proration/dunning/refunds/coupons |
 | Admin | Separate platform-admin authorization, management interfaces and real platform metrics; no ordinary org admin can access nonexistent platform routes |
 | Observability | OpenTelemetry exporters, metrics, centralized structured logging, Sentry, public status data, operational alerts |
 | Infrastructure | AWS IaC, S3 artifacts, Nginx/TLS production ingress, secrets manager, immutable scanned image digests, distributed limits/quotas, HA and exercised DR |
-| Verification | Live providers without credentials, Redis/Compose (Docker engine unavailable), payment/sandbox/SSO tests, provider-contract fixtures for every adapter, automated browser regression suite, component/a11y/load/security-escape testing, container image deployment |
+| Verification | Live providers without credentials, Redis/Compose (Docker engine unavailable), payment/SSO and independent sandbox-escape tests, provider-contract fixtures for every adapter, automated browser regression suite, component/a11y/load/security-escape testing, container image deployment |
 
 ## Important limitations
 
@@ -65,7 +65,7 @@ Agent work currently runs in the API request. Runs can be interrupted by server 
 ## Next delivery priorities
 
 1. Durable agent queue with leases, cancellation and live traces; PostgreSQL integration/tenant tests and RLS.
-2. Separate sandbox control plane and isolated preview with security testing; never activate host subprocess execution.
+2. Expand the implemented sandbox runner with controlled dependency builds, framework dev servers and independent security testing.
 3. Repository intelligence, real-time collaboration and Git issue-to-PR workflow.
 4. Identity/governance, metered billing, platform administration and production infrastructure.
 5. Full browser/accessibility/load/eval suite and independent security review before commercial release.
@@ -77,3 +77,7 @@ Vercel Services builds the Next.js frontend and FastAPI backend together. Neon F
 ## UI refresh — 4 November 2026
 
 Applied a charcoal/blue palette with matching light mode and Monaco theme. Simplified dashboard, navigation, auth, connection, team, usage, settings and assistant copy; removed repeated slogans, promotional panels and redundant approval badges. Kept actionable setup, provider billing and change-review guidance. Production build and TypeScript passed. Desktop dashboard/editor and mobile layout inspected in the browser; light-mode text inheritance and hidden shortcut control corrected.
+
+## Run code and live preview — 4 November 2026
+
+Implemented tenant-authorized Vercel Sandbox sessions, Python/JavaScript/native TypeScript execution, bounded console output and exit codes, five-minute static HTML previews, automatic preview refresh on saved revisions, Stop, encrypted preview links and personal execution history. Added additive migration 0002 and serialized forward migrations during Vercel builds. All 36 backend tests, the production frontend build, temporary-database migration cycle and backend dependency audit passed. Hosted checks passed for Python, JavaScript and native TypeScript output/exit codes, Python error diagnostics, live HTML/CSS/JavaScript assets, missing-token rejection, saved-source refresh and Stop. Browser verification confirmed the iframe renders and refreshes automatically after a Monaco edit is saved. Test-only sandbox sessions were stopped.
