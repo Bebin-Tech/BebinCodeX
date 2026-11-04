@@ -8,6 +8,7 @@ from collections import defaultdict, deque
 from datetime import timedelta, timezone
 from fastapi import FastAPI, Depends, HTTPException, Request, Response, UploadFile
 from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import select, delete, update, func
 from sqlalchemy.orm import Session as DB
@@ -15,13 +16,19 @@ from sqlalchemy.exc import IntegrityError
 from .config import settings
 from .db import get_db
 from .models import User, Session, Organization, Member, Invitation, Project, File, FileVersion, Connection, AgentRun, Trace, Usage, Audit, now
-from .security import current_user, new_session, passwords, digest, membership, project_access, cipher, safe_path, check_content
+from .security import current_user, new_session, passwords, digest, membership, project_access, cipher, safe_path, check_content, normalize_api_key
 from .gateway import Gateway, PROVIDERS
 from .agent import execute
 
 app = FastAPI(title='BebincodeX API', version='0.1.0')
 API = '/api/v1'
 rate_windows = defaultdict(deque)
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_error(request, error):
+    # Pydantic's default input field can contain raw keys/passwords. Omit it.
+    return JSONResponse(status_code=422, content={'detail': [{'loc': e['loc'], 'msg': e['msg'], 'type': e['type']} for e in error.errors()]})
 
 
 @app.middleware('http')
@@ -329,11 +336,12 @@ def connections(org_id: str, user: User = Depends(current_user), db: DB = Depend
 @app.post(API + '/organizations/{org_id}/connections')
 def connect(org_id: str, data: NewConnection, user: User = Depends(current_user), db: DB = Depends(get_db)):
     membership(db, user, org_id, write=True)
-    if data.provider not in PROVIDERS or (not data.api_key and data.provider != 'ollama'):
+    if data.provider not in PROVIDERS:
         raise HTTPException(422, 'Select a provider and supply its API key')
+    key = normalize_api_key(data.api_key, required=data.provider != 'ollama')
     if db.get(Organization, org_id).local_only and data.provider != 'ollama':
         raise HTTPException(403, 'Organization permits local providers only')
-    connection = Connection(org_id=org_id, user_id=user.id, provider=data.provider, label=data.label, encrypted_key=cipher().encrypt(data.api_key.encode()).decode())
+    connection = Connection(org_id=org_id, user_id=user.id, provider=data.provider, label=data.label, encrypted_key=cipher().encrypt(key.encode()).decode())
     db.add(connection)
     audit(db, user, org_id, 'connection.create', org_id)
     db.commit()
@@ -348,6 +356,21 @@ def owned_connection(db, user, connection_id):
     if db.get(Organization, connection.org_id).local_only and connection.provider != 'ollama':
         raise HTTPException(403, 'Organization permits local providers only')
     return connection
+
+
+class UpdateConnectionKey(BaseModel):
+    api_key: str = Field(min_length=1, max_length=2000)
+
+
+@app.put(API + '/connections/{connection_id}')
+def update_connection_key(connection_id: str, data: UpdateConnectionKey, user: User = Depends(current_user), db: DB = Depends(get_db)):
+    connection = owned_connection(db, user, connection_id)
+    membership(db, user, connection.org_id, write=True)
+    key = normalize_api_key(data.api_key)
+    connection.encrypted_key = cipher().encrypt(key.encode()).decode()
+    audit(db, user, connection.org_id, 'connection.key_update', connection.id)
+    db.commit()
+    return {'id': connection.id, 'provider': connection.provider, 'label': connection.label}
 
 
 @app.delete(API + '/connections/{connection_id}')

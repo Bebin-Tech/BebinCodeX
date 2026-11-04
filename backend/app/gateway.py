@@ -5,7 +5,7 @@ import time
 import httpx
 from fastapi import HTTPException
 from .config import settings
-from .security import cipher
+from .security import cipher, normalize_api_key
 
 PROVIDERS = ('openai', 'anthropic', 'gemini', 'groq', 'deepseek', 'ollama', 'compatible')
 failures: dict[str, tuple[int, float]] = {}
@@ -14,7 +14,7 @@ failures: dict[str, tuple[int, float]] = {}
 class Gateway:
     def __init__(self, connection):
         self.provider = connection.provider
-        self.key = cipher().decrypt(connection.encrypted_key.encode()).decode()
+        self.key = normalize_api_key(cipher().decrypt(connection.encrypted_key.encode()).decode(), required=self.provider != 'ollama')
         self.root = getattr(settings, f'{self.provider}_url', '').rstrip('/')
         if not self.root:
             raise HTTPException(503, 'Provider endpoint is not configured by the administrator')
@@ -30,6 +30,9 @@ class Gateway:
             for attempt in range(3):
                 try:
                     response = await client.request(method, self.root + path, headers=self.headers, json=body)
+                    if response.status_code == 401:
+                        provider = {'openai': 'OpenAI', 'anthropic': 'Anthropic', 'gemini': 'Google Gemini', 'groq': 'Groq', 'deepseek': 'DeepSeek', 'ollama': 'Ollama', 'compatible': 'Your provider'}.get(self.provider, 'Your provider')
+                        raise HTTPException(422, f'{provider} rejected the API key (401). In AI connections, choose Update key and enter a valid {provider} API key, then Discover models. Changing the model does not fix an authentication failure.')
                     if response.status_code == 429 or response.status_code >= 500:
                         response.raise_for_status()
                     if response.status_code >= 400:

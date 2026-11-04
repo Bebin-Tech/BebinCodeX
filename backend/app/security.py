@@ -15,6 +15,20 @@ from .models import Session, User, Member, Project, now
 passwords = PasswordHash.recommended()
 
 
+def normalize_api_key(value: str, required=True):
+    """Accept common clipboard wrappers; never include credentials in errors."""
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in ('"', "'"):
+        value = value[1:-1].strip()
+    if value.lower().startswith('bearer '):
+        value = value[7:].strip()
+    if not value and required:
+        raise HTTPException(422, 'Enter an API key from the selected provider.')
+    if any(c.isspace() or ord(c) < 32 or ord(c) == 127 for c in value):
+        raise HTTPException(422, 'Paste only the API key, without spaces or line breaks.')
+    return value
+
+
 def digest(value: str):
     return hashlib.sha256(value.encode()).hexdigest()
 
