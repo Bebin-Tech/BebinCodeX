@@ -129,3 +129,18 @@ class Audit(Record, Base):
     user_id: Mapped[str] = mapped_column(ForeignKey('users.id'))
     action: Mapped[str] = mapped_column(String(100))
     resource_id: Mapped[str] = mapped_column(String(36))
+
+
+class Execution(Record, Base):
+    __tablename__ = 'execution_sessions'
+    project_id: Mapped[str] = mapped_column(ForeignKey('projects.id'), index=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey('users.id'), index=True)
+    kind: Mapped[str] = mapped_column(String(16))
+    path: Mapped[str] = mapped_column(String(512))
+    revision: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(24), default='starting')
+    sandbox_name: Mapped[str] = mapped_column(String(120), default='')
+    output: Mapped[str] = mapped_column(Text, default='')
+    exit_code: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    encrypted_preview: Mapped[str] = mapped_column(Text, default='')
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)

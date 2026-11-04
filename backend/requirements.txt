@@ -9,3 +9,4 @@ pwdlib[argon2]>=0.2,<1
 httpx>=0.28,<1
 email-validator>=2.2,<3
 pytest>=8.3,<10
+vercel==0.12.2

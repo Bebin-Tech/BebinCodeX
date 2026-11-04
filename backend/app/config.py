@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     vercel: bool = False
     vercel_url: str = ''
     vercel_project_production_url: str = ''
+    sandbox_enabled: bool = False
 
     @field_validator('database_url')
     @classmethod

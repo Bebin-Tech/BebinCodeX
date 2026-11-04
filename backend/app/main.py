@@ -470,10 +470,8 @@ def audits(org_id: str, user: User = Depends(current_user), db: DB = Depends(get
     return db.scalars(select(Audit).where(Audit.org_id == org_id).order_by(Audit.created_at.desc()).limit(100)).all()
 
 
-@app.post(API + '/projects/{project_id}/sandbox')
-def sandbox(project_id: str, user: User = Depends(current_user), db: DB = Depends(get_db)):
-    project_access(db, user, project_id, write=True)
-    raise HTTPException(503, 'Isolated execution service is not configured. Generated code is never executed on this API server.')
+from .execution import router as execution_router
+app.include_router(execution_router)
 
 
 @app.get('/health')

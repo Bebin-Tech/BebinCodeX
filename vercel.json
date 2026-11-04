@@ -6,6 +6,7 @@
       "root": "backend",
       "framework": "fastapi",
       "entrypoint": "app.main:app",
+      "buildCommand": "python scripts/migrate_release.py",
       "functions": { "app/main.py": { "maxDuration": 240 } }
     }
   },
